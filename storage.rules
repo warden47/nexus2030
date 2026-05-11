@@ -1,0 +1,71 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ─── Helper functions ───
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    // ─── Avatars ───
+    match /avatars/{uid}/{allPaths=**} {
+      // Owner can read/write their own avatar(s)
+      allow read, write: if isSignedIn() && uid == request.auth.uid;
+
+      // Validation on write
+      match /{fileName} {
+        allow create, update: if request.resource.size < 5 * 1024 * 1024   // 5 MB
+                               && request.resource.contentType.matches('image/.*');
+      }
+    }
+
+    // ─── Thumbnails ───
+    match /thumbnails/{contentId}/{allPaths=**} {
+      // Public read – anyone can view thumbnails
+      allow read: if true;
+
+      // Write: admin or the uploader whose UID matches metadata.creatorId
+      allow create: if isSignedIn()
+                     && request.resource.metadata.creatorId == request.auth.uid
+                     && request.resource.size < 10 * 1024 * 1024;          // 10 MB
+
+      // Update/delete: admin, or owner (matching metadata)
+      allow update, delete: if isAdmin()
+                              || (isSignedIn()
+                                  && resource.metadata.creatorId == request.auth.uid);
+    }
+
+    // ─── User video uploads ───
+    match /uploads/{uid}/{fileName} {
+      // Authenticated read (any logged-in user can later fetch the file)
+      allow read: if isSignedIn();
+
+      // Only the owner can write
+      allow create: if isSignedIn()
+                     && uid == request.auth.uid
+                     && request.resource.size < 5 * 1024 * 1024 * 1024    // 5 GB
+                     && request.resource.contentType.matches('video/(mp4|quicktime|x-matroska|webm|ogg)');
+
+      // Owner can update/delete
+      allow update, delete: if isSignedIn() && uid == request.auth.uid;
+    }
+
+    // ─── AI assets ───
+    match /ai-assets/{allPaths=**} {
+      // Public read – e.g., generated backgrounds, mood images
+      allow read: if true;
+
+      // Only admin can write
+      allow write: if isAdmin();
+    }
+
+    // ─── Global deny ───
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,149 @@
+/* animations.css — NEXUS 2030 custom keyframes & utility classes */
+
+/* ─── Shimmer (skeleton loaders) ─── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ─── Pulse Glow (button / card breathing) ─── */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px var(--primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--primary), 0 0 40px var(--secondary);
+  }
+}
+
+/* ─── Neon Breathe (live badges) ─── */
+@keyframes neon-breathe {
+  0%, 100% {
+    text-shadow: 0 0 4px var(--primary), 0 0 8px var(--primary);
+    opacity: 0.9;
+  }
+  50% {
+    text-shadow: 0 0 12px var(--secondary), 0 0 24px var(--neon-cyan);
+    opacity: 1;
+  }
+}
+
+/* ─── Float (gentle vertical bob) ─── */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* ─── Confetti Burst ─── */
+@keyframes confetti-burst {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5) rotate(15deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) rotate(30deg);
+    opacity: 0;
+  }
+}
+
+/* ─── Card Enter (scroll reveal) ─── */
+@keyframes card-enter {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ─── Magnetic Release (elastic bounce) ─── */
+@keyframes magnetic-release {
+  0% {
+    transform: scale(1.05);
+  }
+  60% {
+    transform: scale(0.97);
+  }
+  80% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ─── Scan Line (CRT effect overlay) ─── */
+@keyframes scan-line {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* ─── Utility classes (Tailwind-compatible) ─── */
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(108, 92, 231, 0.15) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-neon-breathe {
+  animation: neon-breathe 2.5s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-confetti-burst {
+  animation: confetti-burst 0.6s ease-out forwards;
+}
+
+.animate-card-enter {
+  animation: card-enter 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+.animate-magnetic-release {
+  animation: magnetic-release 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+.animate-scan-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  animation: scan-line 4s linear infinite;
+}
+
+/* ─── Respect prefers reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
